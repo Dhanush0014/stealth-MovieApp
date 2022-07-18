@@ -25,7 +25,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-    res.send("Welcome user please lodin/create account");
+    logger.info("In Home page");
+    res.send("Welcome user please login/create account");
     res.end();
 })
 
