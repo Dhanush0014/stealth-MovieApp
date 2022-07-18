@@ -7,10 +7,11 @@ const Auth = require('./auth');
 const userModel = require('./db/Schema/user');
 const movieModel = require('./db/Schema/movie');
 const config = require('./db/config.json')
+const serverConfig = require('./server-config.json')
 const logger = require('./utils/winston');
 const mongoose = require("mongoose");const { isArray } = require('util');
 
-const port = 8080;
+const port = serverConfig.port;
 mongoose.connect(config.URL, {
     dbName: config.db,
     useNewUrlParser: true,
@@ -20,7 +21,7 @@ mongoose.connect(config.URL, {
     logger.error(err);
 }))
 
-app.use(cookieParser("1234"));
+app.use(cookieParser(serverConfig.cookies.secretKey));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
