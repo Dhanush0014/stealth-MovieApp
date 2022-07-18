@@ -1,0 +1,4 @@
+{
+    "URL":"mongodb+srv://Dhanush:Dhanush000@cluster0.rlqlc1j.mongodb.net/movies?retryWrites=true&w=majority",
+    "db":"movieapp"
+}
