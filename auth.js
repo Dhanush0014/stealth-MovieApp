@@ -1,16 +1,22 @@
 const userModel = require('./db/Schema/user')
 const bcrypt = require('bcryptjs');
-
+const logger = require('./utils/winston');
 class Auth {
 
     static isValid(cookies, headers, url) {
 
         if (!cookies) {
-            if (!headers || (url === "login" || url === "/register")) {
+            if (!headers ) {
+                if(url === "login" || url === "/register")
                 return Promise.resolve("NoAuthenticateRequired");
+                else{
+                    return Promise.reject({message:"Invalid user request required Headers"})
+                }
             }
             else if (url === "/logout") {
-                //if suppose rying to logout without login
+                
+                //if suppose trying to logout without login
+
                 return Promise.reject({ message: "user not loged in" });
             }
             else {
@@ -20,7 +26,7 @@ class Auth {
                 return userModel.getUser(user)
                     .then((userData) => {
                         if (!userData) {
-                            console.log("invalid User because user data not found");
+                            logger.info("[Auth] invalid User because user data not found[Auth]");
                             return Promise.reject({message:"inValid User"});
                         }
                         return bcrypt.hash(password, 12);
@@ -29,24 +35,28 @@ class Auth {
                         return bcrypt.compare(password, hashedPswd);
                     }).then(valid => {
                         if (valid) {
-                            console.log('[no cookies]');
-                            console.log("Adding Cookies....")
+                            logger.info('[no cookies]');
+                            logger.info("Adding Cookies....")
                             return Promise.resolve(user);
                         }
-                        console.log("invalid user because password did not match");
+                        logger.error("match[Auth] invalid user because password did not match[Auth]");
                         return Promise.reject({message:"inValid User"});
                     }).catch((err) => {
-                        console.log("error in no cookies");
-                        console.log(err);
+                        logger.info("error in no cookies");
+                        logger.error(err);
                         return Promise.reject(err);
                     })
             }
         }
         else {
 
+            if(!headers){
+                logger.info("[Auth] request without both header and cookies")
+                return Promise.reject({message:"Invalid user request required Headers"})
+            }
+
             let buffer = this.dcryptHeader(headers);
             let user = buffer[0];
-
             // checking in the existence of User;
             return this.validUser(cookies)
                 .then((response) => {
@@ -54,12 +64,12 @@ class Auth {
                         return Promise.resolve(response);
                     }
                     else {
-                        console.log("logout from current user/ enter valid user credentials");
+                        logger.info("[Auth]logout from current user/ enter valid user credentials");
                         return Promise.reject({message:"inValid User"});
                     }
                 }).catch((err) => {
-                    console.log("err in cookies")
-                    console.log(err);
+                    logger.error("[Auth] err in cookies")
+                    logger.error(err);
                     return Promise.reject(err);
                 })
         }
@@ -74,10 +84,10 @@ class Auth {
     static validUser(user) {
         return userModel.getUser(user)
             .then((userData) => {
-                console.log("user data from [validUser]")
+                logger.info("[Auth] user data from [validUser]")
                 if (!userData) {
-                    console.log("error in [validuser]")
-                    return Promise.reject("inValid User");
+                    logger.info("[Auth] error in [validuser]")
+                    return Promise.reject("[Auth] inValid User");
                 }
                 return Promise.resolve(user);
             })

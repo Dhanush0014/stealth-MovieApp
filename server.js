@@ -7,23 +7,23 @@ const Auth = require('./auth');
 const userModel = require('./db/Schema/user');
 const movieModel = require('./db/Schema/movie');
 const config = require('./db/config.json')
-
+const logger = require('./utils/winston');
 const mongoose = require("mongoose");const { isArray } = require('util');
-;
 
-
+const port = 8080;
 mongoose.connect(config.URL, {
     dbName: config.db,
     useNewUrlParser: true,
 }).then(() => {
-    console.log("Connected to mongodb....")
+    logger.info("Connected to mongodb....")
 }).catch((err => {
-    console.log(err);
+    logger.error(err);
 }))
 
 app.use(cookieParser("1234"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.get('/', (req, res) => {
     res.send("Welcome user please lodin/create account");
     res.end();
@@ -34,28 +34,28 @@ const authenticate = (req, res, next) => {
     let headers = req.headers.authorization;
     let url = req.url;
 
-    console.log("[Authenticate]")
-    console.log("cookies;");
-    console.log(cookies);
-    console.log("url;");
-    console.log(url);
-    console.log("headers:");
-    console.log(headers);
+    logger.info("[Authenticate]")
+    logger.info("cookies;");
+    logger.info(cookies);
+    logger.info("url;");
+    logger.info(url);
+    logger.info("headers:");
+    logger.info(headers);
     
     return Auth.isValid(cookies, headers, url)
         .then((data) => {
-            console.log("Data from Auth " + data);
+            logger.info("Data from Auth " + data);
             if (data === "NoAuthenticateRequired") {
+                //for first time login in, in our case add movie 
                 res.setHeader("WWW-Authenticate", "Basic")
             }
             if (data !== "NoAuthenticateRequired") {
-                console.log(data);
+                logger.info(data);
                 res.cookie('user', data,{signed:true})
-
             }
             next();
         }).catch((err) => {
-            console.log(err)
+            console.error(err)
             res.setHeader("WWW-Authenticate", "Basic")
             res.status(401).send(err.message);
         })
@@ -63,11 +63,7 @@ const authenticate = (req, res, next) => {
 
 
 app.post('/register', (req, res) => {
-
     let { username, email, password } = req.body;
-
-
-
     userModel.getUser(email)
         .then((user) => {
             if (user) {
@@ -77,36 +73,37 @@ app.post('/register', (req, res) => {
         })
         .then((hashedPswd) => {
             password = hashedPswd;
-            console.log(password);
+          
             let newUser = userModel({
                 username: username,
                 email: email,
                 password: password
             })
-            console.log("new User    " + newUser);
+            logger.info("new User    " + newUser);
             newUser.save();
         })
         .then(() => {
-            console.log("logging cokkie after registering");
+            logger.info("logging cokkie after registering");
             res.status(200).send("registered sucessfully");
             res.end()
         })
         .catch(errMsg => {
-            console.log(errMsg)
+            logger.error(errMsg)
             res.status(400).send(errMsg);
             res.end();
 
         })
 
 })
-app.get('/login', (req, res) => {
+
+app.get('/login', authenticate,(req, res) => {
     const { email, password } = req.body;
 
     userModel.getUser(email).then((user) => {
         if (!user) {
             throw "user not found";
         }
-        console.log(user.password);
+        logger.info(user.password);
         return bcrypt.compare(password, user.password);
     })
         .then((pswdMatch) => {
@@ -120,20 +117,21 @@ app.get('/login', (req, res) => {
             res.end();
         })
         .catch(errMsg => {
-            console.log(errMsg);
+            logger.error(errMsg);
             res.status(400).send(errMsg);
             res.end();
         })
 
 
 })
+
 app.get("/logout", authenticate, (req, res) => {
     res.clearCookie('user').status(200).send("logged Out!!!");
-    console.log("loged Out!!!...");
+    logger.info("loged Out!!!...");
     res.end();
 })
 
-app.post('/addMovie', (req, res) => {
+app.post('/addMovie',authenticate, (req, res) => {
     const { name, rating, cast, genre, releaseDate } = req.body;
     movieModel.findByName(name).then((movie) => {
         if (movie) {
@@ -146,24 +144,22 @@ app.post('/addMovie', (req, res) => {
             Genre: genre,
             ReleaseDate: new Date(releaseDate)
         })
-        console.log(newMovie);
+        logger.info(newMovie);
         return newMovie.save();
     })
         .then(() => {
             res.send("movie Added");
             res.end()
         }).catch(err => {
-            console.log(err);
+            logger.error(err);
             res.send("unable to add movie " + err.message);
             res.end()
         })
-
-
 })
 
 app.put('/update/name',authenticate,(req, res) => {
     const { name, newName} = req.body;
-    console.log(name + " " + newName);
+    logger.info(name + " " + newName);
     if (!newName || newName === "") {
         res.send("invalid new movie name");
         res.end();
@@ -171,7 +167,8 @@ app.put('/update/name',authenticate,(req, res) => {
     else {
         movieModel.findByName(newName)
             .then((movie) => {
-                console.log(movie);
+                logger.info("Exisiting Movie data");
+                logger.info(movie);
                 if (movie !== null) {
                     throw { message: "new movie name already exisited" };
                 }
@@ -187,7 +184,7 @@ app.put('/update/name',authenticate,(req, res) => {
                 res.end();
             })
             .catch((err) => {
-                console.log(err);
+                logger.error(err);
                 res.send("unable to update " + err.message);
                 res.end();
             })
@@ -196,7 +193,7 @@ app.put('/update/name',authenticate,(req, res) => {
 
 app.put('/update/rating', authenticate,(req, res) => {
     const { name, newRating} = req.body;
-    console.log(name + " " + newRating);
+    logger.info(name + " " + newRating);
       if (!newRating || newRating === "") {
         res.send("invalid new rating ");
         res.end();
@@ -204,7 +201,7 @@ app.put('/update/rating', authenticate,(req, res) => {
     else {
         movieModel.findByName(name)
             .then((movie) => {
-                console.log(movie);
+                logger.info(movie);
                 if (movie === null) {
                     throw { message: "movie not found" };
                 }
@@ -220,7 +217,7 @@ app.put('/update/rating', authenticate,(req, res) => {
                 res.end();
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 res.send("unable to update " + err.message);
                 res.end();
             })
@@ -229,11 +226,9 @@ app.put('/update/rating', authenticate,(req, res) => {
 
 })
 
-
-
-app.put('/update/genre', (req, res) => {
+app.put('/update/genre',authenticate, (req, res) => {
     const { name, newGenre} = req.body;
-    console.log(name + " " + newGenre);
+    logger.info(name + " " + newGenre);
       if (!newGenre || newGenre === "") {
         res.send("invalid new rating ");
         res.end();
@@ -241,7 +236,7 @@ app.put('/update/genre', (req, res) => {
     else {
         movieModel.findByName(name)
             .then((movie) => {
-                console.log(movie);
+                logger.info(movie);
                 if (movie === null) {
                     throw { message: "movie not found" };
                 }
@@ -257,7 +252,7 @@ app.put('/update/genre', (req, res) => {
                 res.end();
             })
             .catch((err) => {
-                console.log(err);
+                logger.error(err);
                 res.send("unable to update " + err.message);
                 res.end();
             })
@@ -266,10 +261,10 @@ app.put('/update/genre', (req, res) => {
 
 })
 
-app.put('/update/releaseDate', (req, res) => {
+app.put('/update/releaseDate',authenticate, (req, res) => {
     let { name, newReleaseDate} = req.body;
     newReleaseDate = new Date(newReleaseDate);
-    console.log(name + " " + newReleaseDate);
+    logger.info(name + " " + newReleaseDate);
       if (!newReleaseDate || newReleaseDate === "") {
         res.send("invalid new rating ");
         res.end();
@@ -277,14 +272,14 @@ app.put('/update/releaseDate', (req, res) => {
     else {
         movieModel.findByName(name)
             .then((movie) => {
-                console.log(movie);
+                logger.info(movie);
                 if (movie === null) {
                     throw { message: "movie not found" };
                 }
                 return Promise.resolve(movieModel.updateOne({ Name: name }, { ReleaseDate: new Date(newReleaseDate) }))
             })
             .then((update) => {
-                console.log(update);
+                logger.info(update);
                 if (update.acknowledged) {
                     res.send("movie  releaseDate updated");
                 }
@@ -294,7 +289,7 @@ app.put('/update/releaseDate', (req, res) => {
                 res.end();
             })
             .catch((err) => {
-                console.log(err);
+                logger.error(err);
                 res.send("unable to update " + err.message);
                 res.end();
             })
@@ -302,7 +297,8 @@ app.put('/update/releaseDate', (req, res) => {
     }
 
 })
-app.put('/update/Cast',(req,res)=>{
+
+app.put('/update/Cast',authenticate,(req,res)=>{
     let {name, newCast} = req.body;
 
     if (!newCast ||  newCast.length == ""|| newCast ===[]) {
@@ -314,7 +310,7 @@ app.put('/update/Cast',(req,res)=>{
         }
         movieModel.findByName(name)
         .then((movie) => {
-            console.log(movie);
+            logger.info(movie);
             if (movie === null) {
                 throw { message: "movie not found" };
             }
@@ -338,4 +334,27 @@ app.put('/update/Cast',(req,res)=>{
 
     }
 })
-app.listen(8080, console.log("server running..."));
+
+app.put('/deleteMovie',authenticate,(req,res)=>{
+    const{name} = req.body;
+    movieModel.findByName(name)
+    .then((movie)=>{
+        if(movie===null){
+            return Promise.reject({message:"Enter valid Movie name"});
+        }
+        return movieModel.deleteOne({Name:name});
+    }).then((response)=>{
+        if(response.acknowledged){
+            res.status(200).send("movie deleted Successfully");
+            res.end();
+        }
+        else{
+            throw { message: "movie not deleted" }
+        }
+    }).catch((err)=>{
+        res.status(400).send(err.message);
+        res.end();
+    })
+})
+
+app.listen(port, console.log(`🚀 Server ready at https://localhost:${port}`));

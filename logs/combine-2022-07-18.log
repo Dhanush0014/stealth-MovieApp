@@ -1,0 +1,48 @@
+[32m2022-07-18T14:06:30.608Z - [32minfo[32m: 	🚀 Server ready at https://localhost:8080[39m
+[32m2022-07-18T14:07:23.354Z - [32minfo[32m: 	🚀 Server ready at https://localhost:8080[39m
+[32m2022-07-18T14:21:43.852Z - [32minfo[32m: 	🚀 Server ready at https://localhost:8080[39m
+[32m2022-07-18T14:21:45.532Z - [32minfo[32m: 	Connected to mongodb....[39m
+[32m2022-07-18T14:22:31.642Z - [32minfo[32m: 	Connected to mongodb....[39m
+[32m	Connected to mongodb....[39m
+[32m	Connected to mongodb....[39m
+[32m2022-07-18T14:35:02.790Z - [32minfo[32m: 	Connected to mongodb....[39m
+[32m	Connected to mongodb....[39m
+[32m	Connected to mongodb....[39m
+[32mConnected to mongodb....[39m
+[32m[Authenticate][39m
+[32mcookies;[39m
+[32mdhanush000@gmail.com[39m
+[32murl;[39m
+[32m/addMovie[39m
+[32mheaders:[39m
+[32mBasic ZGhhbnVzaDAwMEBnbWFpbC5jb206cGFzc3dvcmQ=[39m
+[32mConnected to mongodb....[39m
+[32m[Authenticate][39m
+[32mcookies;[39m
+[32mdhanush000@gmail.com[39m
+[32murl;[39m
+[32m/addMovie[39m
+[32mheaders:[39m
+[32mBasic ZGhhbnVzaDAwMEBnbWFpbC5jb206cGFzc3dvcmQ=[39m
+[32m[Auth] user data from [validUser][39m
+[32mData from Auth dhanush000@gmail.com[39m
+[32mdhanush000@gmail.com[39m
+[31mmovie already added[39m
+[32m[Authenticate][39m
+[32mcookies;[39m
+[32mdhanush000@gmail.com[39m
+[32murl;[39m
+[32m/addMovie[39m
+[32mheaders:[39m
+[32mBasic ZGhhbnVzaDAwMEBnbWFpbC5jb206cGFzc3dvcmQ=[39m
+[32m[Auth] user data from [validUser][39m
+[32mData from Auth dhanush000@gmail.com[39m
+[32mdhanush000@gmail.com[39m
+[32m{[39m
+[32m  Name: '20',[39m
+[32m  Rating: 10,[39m
+[32m  Cast: [ 'Tom Holland' ],[39m
+[32m  Genre: 'number',[39m
+[32m  ReleaseDate: 2021-10-08T18:30:00.000Z,[39m
+[32m  _id: new ObjectId("62d57095d92ef0bce4cb6d0b")[39m
+[32m}[39m
