@@ -18,7 +18,8 @@ const userSchema = new Schema({
 
 })
 
-userSchema.statics.getuser = function(email){
+
+userSchema.statics.getUser = function(email){
     console.log("email",email);
     return this.findOne({email:email}).then((data)=>{
         console.log(data);
