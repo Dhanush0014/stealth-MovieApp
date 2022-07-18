@@ -1,0 +1,33 @@
+[32mConnected to mongodb....[39m
+[32mnew User    {[39m
+[32m  email: 'admin@gmail.com',[39m
+[32m  password: '$2a$12$vou0V77E2fcRGoMxCpLG2eb69y81keVoGaJCftfsiikJIwgl3wxx.',[39m
+[32m  _id: new ObjectId("62d58aaa7de1ddbf84e00e43")[39m
+[32m}[39m
+[31mundefined[39m
+[32mConnected to mongodb....[39m
+[32mnew User    {[39m
+[32m  email: 'admin@gmail.com',[39m
+[32m  password: '$2a$12$yi8hDphyBbCKRUCNYVct4eYjtozkoGu9LwrIrhkWPPRpyBmZPRpty',[39m
+[32m  _id: new ObjectId("62d58ae191054aef7d0a6929")[39m
+[32m}[39m
+[32mConnected to mongodb....[39m
+[32mnew User    {[39m
+[32m  email: 'admin@gmail.com',[39m
+[32m  password: '$2a$12$oBTJPhBABRUgWV0ghHSCoOQ/cQKgrRbcjitCj.C1o9Z49/hMnSEfy',[39m
+[32m  _id: new ObjectId("62d58b2be21cec32e27656cb")[39m
+[32m}[39m
+[31mundefined[39m
+[32mnew User    {[39m
+[32m  username: 'admin',[39m
+[32m  email: 'admin@gmail.com',[39m
+[32m  password: '$2a$12$oHt8ljU8RPhGU51TqrZM7eANwsnF88Wf.uxXHgqiVb0Z9QU5J9W/.',[39m
+[32m  _id: new ObjectId("62d58b50e21cec32e27656cd")[39m
+[32m}[39m
+[32mConnected to mongodb....[39m
+[31mUser Already Exisited[39m
+[32mConnected to mongodb....[39m
+[31mUser Already Exisited[39m
+[32mConnected to mongodb....[39m
+[32mConnected to mongodb....[39m
+[32mConnected to mongodb....[39m

@@ -65,7 +65,11 @@ const authenticate = (req, res, next) => {
 
 app.post('/register', (req, res) => {
     let { username, email, password } = req.body;
-    userModel.getUser(email)
+    if(username.length === 0||email.length===0||password.length===0){
+        res.send("Enter valid user details");
+    }
+    else{
+        userModel.getUser(email)
         .then((user) => {
             if (user) {
                 throw "User Already Exisited";
@@ -81,20 +85,27 @@ app.post('/register', (req, res) => {
                 password: password
             })
             logger.info("new User    " + newUser);
-            newUser.save();
+            return newUser.save();
         })
-        .then(() => {
-            logger.info("logging cokkie after registering");
-            res.status(200).send("registered sucessfully");
-            res.end()
+        .then((data) => {
+            if(data){
+                res.status(200).send("registered sucessfully");
+                res.end()
+            }
+             else{
+                 logger.info(data);
+                 throw {message:"something went wrong"};
+             }
         })
-        .catch(errMsg => {
-            logger.error(errMsg)
-            res.status(400).send(errMsg);
+        .catch(err => {
+            logger.error(err)
+            res.status(400).send(err.message);
             res.end();
 
         })
 
+    }
+   
 })
 
 app.get('/login', authenticate,(req, res) => {
