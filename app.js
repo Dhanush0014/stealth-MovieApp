@@ -357,4 +357,4 @@ app.put('/deleteMovie',authenticate,(req,res)=>{
     })
 })
 
-app.listen(port, console.log(`🚀 Server ready at https://localhost:${port}`));
+app.listen(process.env.PORT ||port, console.log(`🚀 Server ready at https://localhost:${port}`));
