@@ -73,7 +73,7 @@ app.post('/register', (req, res) => {
         userModel.getUser(email)
         .then((user) => {
             if (user) {
-                throw "User Already Exisited";
+                throw {message:"User Already Exisited"};
             }
             return Promise.resolve(bcrypt.hash(password, 12));
         })
@@ -114,14 +114,14 @@ app.get('/login', authenticate,(req, res) => {
 
     userModel.getUser(email).then((user) => {
         if (!user) {
-            throw "user not found";
+            throw {message:"user not found"};
         }
         logger.info(user.password);
         return bcrypt.compare(password, user.password);
     })
         .then((pswdMatch) => {
             if (!pswdMatch) {
-                throw "invalid password";
+                throw {message:"invalid password"};
             }
             return "login successfull!!!"
         })
@@ -130,8 +130,8 @@ app.get('/login', authenticate,(req, res) => {
             res.end();
         })
         .catch(errMsg => {
-            logger.error(errMsg);
-            res.status(400).send(errMsg);
+            logger.error(err.message);
+            res.status(400).send(err.message);
             res.end();
         })
 
