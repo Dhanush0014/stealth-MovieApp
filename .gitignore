@@ -1,2 +1,3 @@
 # stealth-MovieApp
 *.oldApproch.js
+/node_modules
