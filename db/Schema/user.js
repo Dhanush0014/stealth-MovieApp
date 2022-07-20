@@ -24,6 +24,9 @@ userSchema.statics.getUser = function(email){
     return this.findOne({email:email}).then((data)=>{
         console.log(data);
         return Promise.resolve(data);
+    }).catch(err=>{
+    
+        return Promise.reject(err.message);
     })
 }
 

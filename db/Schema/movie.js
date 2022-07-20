@@ -26,6 +26,10 @@ movieSchema.statics.findByName= function(name){
     return this.findOne({Name:name}).then((movie)=>{
         return Promise.resolve(movie);
     })
+    .catch(err=>{
+    
+        return Promise.reject(err.message);
+    })
 }
 
 

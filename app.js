@@ -187,6 +187,12 @@ app.put('/update/name',authenticate,(req, res) => {
                 if (movie !== null) {
                     throw { message: "new movie name already exisited" };
                 }
+                return movieModel.findByName(name)
+            })
+            .then((movie)=>{
+                if(!movie){
+                    throw {message:"Invalid movie name"};
+                }
                 return Promise.resolve(movieModel.updateOne({ Name: name }, { Name: newName }))
             })
             .then((update) => {
